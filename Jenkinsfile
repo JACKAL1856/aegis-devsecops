@@ -2,9 +2,11 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo 'Checking out source code'
+                checkout scm
             }
         }
 
@@ -14,11 +16,15 @@ pipeline {
             }
         }
 
-        stage('Security') {
+        stage('SAST - Semgrep') {
             steps {
-                echo 'Aegis DevSecOps pipeline is alive'
+                sh '''
+                  echo "Running Semgrep SAST scan..."
+                  semgrep --config=auto --severity=ERROR --error .
+                '''
             }
         }
+
     }
 
     post {
@@ -26,7 +32,7 @@ pipeline {
             echo 'Pipeline completed successfully'
         }
         failure {
-            echo 'Pipeline failed'
+            echo 'Pipeline failed due to security gate'
         }
     }
 }
