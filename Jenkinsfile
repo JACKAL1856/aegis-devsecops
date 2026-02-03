@@ -20,6 +20,7 @@ pipeline {
         sh '''
           echo "Running Semgrep SAST secrets scan..."
           export PATH=$PATH:$HOME/.local/bin
+
           semgrep --version
 
           # FAIL pipeline on ANY secret finding
@@ -38,7 +39,6 @@ pipeline {
             echo "Downloading OWASP Dependency-Check..."
             curl -sL https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.7/dependency-check-9.0.7-release.zip -o dc.zip
             unzip -q dc.zip
-            mv dependency-check-9.0.7 dependency-check
           fi
 
           # Run scan (FAIL on CVSS >= 7)
@@ -62,6 +62,7 @@ pipeline {
     }
   }
 }
+
 
 
 
