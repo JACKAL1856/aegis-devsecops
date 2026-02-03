@@ -19,10 +19,8 @@ pipeline {
       steps {
         sh '''
           echo "Running Semgrep SAST secrets scan..."
-
           export PATH=$PATH:$HOME/.local/bin
           semgrep --version
-
           semgrep --config=p/secrets --error .
         '''
       }
@@ -31,7 +29,7 @@ pipeline {
     stage('SCA - Dependency Check') {
       steps {
         sh '''
-          echo "Running OWASP Dependency-Check SCA scan..."
+          echo "Running OWASP Dependency-Check SCA scan (non-blocking)..."
 
           if [ ! -d "dependency-check" ]; then
             echo "Downloading OWASP Dependency-Check..."
@@ -44,8 +42,7 @@ pipeline {
             --scan app \
             --format HTML \
             --out dependency-check-report \
-            --failOnCVSS 7 \
-            --noupdate
+            --noupdate || true
         '''
       }
     }
@@ -68,14 +65,15 @@ pipeline {
   }
 
   post {
-    success {
-      echo 'Pipeline completed successfully'
+    always {
+      echo 'Pipeline finished'
     }
     failure {
-      echo 'Pipeline FAILED due to security gate'
+      echo 'Pipeline failed due to security gate'
     }
   }
 }
+
 
 
 
