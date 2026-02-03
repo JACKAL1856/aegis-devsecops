@@ -9,13 +9,7 @@ pipeline {
       }
     }
 
-    stage('Build') {
-      steps {
-        echo 'Build stage placeholder'
-      }
-    }
-
-    stage('SAST - Semgrep (Secrets Gate)') {
+    stage('SAST - Semgrep') {
       steps {
         sh '''
           echo "Running Semgrep SAST secrets scan..."
@@ -52,27 +46,32 @@ pipeline {
         sh '''
           echo "Starting Flask application for DAST..."
 
-          pip3 install -r app/requirements.txt
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
 
-          nohup python3 app/app.py > app.log 2>&1 &
+          . venv/bin/activate
+
+          pip install --upgrade pip
+          pip install -r app/requirements.txt
+
+          nohup python app/app.py > app.log 2>&1 &
           sleep 10
-
-          echo "Flask app started"
         '''
       }
     }
-
   }
 
   post {
     always {
-      echo 'Pipeline finished'
+      echo "Pipeline finished"
     }
     failure {
-      echo 'Pipeline failed due to security gate'
+      echo "Pipeline failed due to security gate"
     }
   }
 }
+
 
 
 
