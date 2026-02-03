@@ -5,7 +5,6 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        echo 'Checking out source code'
         checkout scm
       }
     }
@@ -16,9 +15,6 @@ pipeline {
       }
     }
 
-    /* =========================
-       GATE 1 – SAST (SEMGREP)
-       ========================= */
     stage('SAST - Semgrep (Secrets Gate)') {
       steps {
         sh '''
@@ -27,15 +23,11 @@ pipeline {
           export PATH=$PATH:$HOME/.local/bin
           semgrep --version
 
-          # Fail pipeline on ANY secret detection
           semgrep --config=p/secrets --error .
         '''
       }
     }
 
-    /* =========================
-       GATE 2 – SCA (DEPENDENCY CHECK)
-       ========================= */
     stage('SCA - Dependency Check') {
       steps {
         sh '''
@@ -57,6 +49,22 @@ pipeline {
         '''
       }
     }
+
+    stage('Run Application') {
+      steps {
+        sh '''
+          echo "Starting Flask application for DAST..."
+
+          pip3 install -r app/requirements.txt
+
+          nohup python3 app/app.py > app.log 2>&1 &
+          sleep 10
+
+          echo "Flask app started"
+        '''
+      }
+    }
+
   }
 
   post {
@@ -68,6 +76,7 @@ pipeline {
     }
   }
 }
+
 
 
 
