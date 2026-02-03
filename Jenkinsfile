@@ -12,21 +12,18 @@ pipeline {
     stage('SAST - Semgrep') {
       steps {
         sh '''
-          echo "Running Semgrep SAST secrets scan..."
-          export PATH=$PATH:$HOME/.local/bin
-          semgrep --version
+          echo "Running Semgrep SAST..."
           semgrep --config=p/secrets --error .
         '''
       }
     }
 
-    stage('SCA - Dependency Check') {
+    stage('SCA - Dependency Check (Non-Blocking)') {
       steps {
         sh '''
-          echo "Running OWASP Dependency-Check SCA scan (non-blocking)..."
+          echo "Running OWASP Dependency-Check (non-blocking)..."
 
           if [ ! -d "dependency-check" ]; then
-            echo "Downloading OWASP Dependency-Check..."
             curl -sL https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.7/dependency-check-9.0.7-release.zip -o dc.zip
             unzip -q dc.zip
           fi
@@ -44,7 +41,9 @@ pipeline {
     stage('Run Application') {
       steps {
         sh '''
-          echo "Starting Flask application for DAST..."
+          echo "Starting Flask app for DAST..."
+
+          cd app
 
           if [ ! -d "venv" ]; then
             python3 -m venv venv
@@ -53,9 +52,10 @@ pipeline {
           . venv/bin/activate
 
           pip install --upgrade pip
-          pip install -r app/requirements.txt
+          pip install -r requirements.txt
 
-          nohup python app/app.py > app.log 2>&1 &
+          nohup python app.py > app.log 2>&1 &
+
           sleep 10
         '''
       }
@@ -71,6 +71,7 @@ pipeline {
     }
   }
 }
+
 
 
 
