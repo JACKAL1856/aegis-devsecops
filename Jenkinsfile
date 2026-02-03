@@ -22,7 +22,12 @@ pipeline {
                   echo "Running Semgrep SAST scan..."
                   export PATH=$PATH:$HOME/.local/bin
                   semgrep --version
-                  semgrep --config=auto --severity=ERROR --error .
+                  semgrep \
+  --config=auto \
+  --config=p/secrets \
+  --severity=ERROR \
+  --error .
+
                 '''
             }
         }
