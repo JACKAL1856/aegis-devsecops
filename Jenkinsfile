@@ -20,17 +20,14 @@ pipeline {
       steps {
         sh '''
           echo "Running Semgrep SAST secrets scan..."
-          export PATH=$PATH:$HOME/.local/bin
-
+          export PATH=$PATH:/var/lib/jenkins/.local/bin
           semgrep --version
 
-          # Secrets-only security gate
-          # Any finding = pipeline FAIL
-          semgrep --config=p/secrets --error .
+          # HARD SECURITY GATE — FAIL ON ANY SECRET
+          semgrep --config=p/secrets --severity=ERROR --error .
         '''
       }
     }
-
   }
 
   post {
@@ -38,8 +35,9 @@ pipeline {
       echo 'Pipeline completed successfully'
     }
     failure {
-      echo 'Pipeline failed due to security gate'
+      echo 'Pipeline FAILED due to SAST security gate'
     }
   }
 }
+
 
