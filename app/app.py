@@ -1,6 +1,8 @@
-# Intentionally insecure secret for SAST test
+#  Intentionally injected secret for SAST gate validation
+AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
 AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 
 print("Aegis pipeline alive")
+
 
 
