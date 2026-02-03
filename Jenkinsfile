@@ -1,11 +1,25 @@
 pipeline {
   agent any
 
+  environment {
+    PATH = "$PATH:$HOME/.local/bin"
+  }
+
   stages {
 
     stage('Checkout') {
       steps {
         checkout scm
+      }
+    }
+
+    stage('Install Semgrep') {
+      steps {
+        sh '''
+          echo "Installing Semgrep..."
+          python3 -m pip install --user semgrep
+          semgrep --version
+        '''
       }
     }
 
@@ -71,6 +85,7 @@ pipeline {
     }
   }
 }
+
 
 
 
