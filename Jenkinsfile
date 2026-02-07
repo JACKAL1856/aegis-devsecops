@@ -1,18 +1,5 @@
 pipeline {
-
-    /*
-     ==========================================================
-     Docker-based Jenkins Agent
-     - No Docker required on Jenkins host
-     - ZAP runs inside container
-     ==========================================================
-    */
-    agent {
-        docker {
-            image 'zaproxy/zap-stable'
-            args '-u root:root'
-        }
-    }
+    agent any
 
     environment {
         TARGET_URL = "http://host.docker.internal:3000"
@@ -29,12 +16,16 @@ pipeline {
 
         stage('DAST - OWASP ZAP Baseline') {
             steps {
-                echo 'Running OWASP ZAP baseline DAST scan...'
-                sh '''
-                zap-baseline.py \
-                  -t ${TARGET_URL} \
-                  -r dast-report.html
-                '''
+                script {
+                    docker.image('zaproxy/zap-stable').inside {
+                        sh '''
+                        echo "Running OWASP ZAP Baseline Scan..."
+                        zap-baseline.py \
+                          -t ${TARGET_URL} \
+                          -r dast-report.html
+                        '''
+                    }
+                }
             }
         }
     }
@@ -52,6 +43,7 @@ pipeline {
         }
     }
 }
+
 
 
 
