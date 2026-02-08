@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(
+            name: 'SECURITY_WAIVER',
+            defaultValue: false,
+            description: 'Approve pipeline to continue despite High/Critical DAST findings'
+        )
+    }
+
     stages {
 
         stage('Checkout') {
@@ -12,16 +20,16 @@ pipeline {
         stage('DAST Report Validation') {
             steps {
                 sh '''
-                    echo "Checking workspace..."
-                    pwd
-                    ls -l
+                  echo "Checking workspace..."
+                  pwd
+                  ls -l
 
-                    if [ ! -f dast-report.html ]; then
-                        echo "DAST report not found!"
-                        exit 1
-                    fi
+                  if [ ! -f dast-report.html ]; then
+                    echo "DAST report not found!"
+                    exit 1
+                  fi
 
-                    echo "DAST report found"
+                  echo "DAST report found"
                 '''
             }
         }
@@ -29,14 +37,20 @@ pipeline {
         stage('DAST Security Gate') {
             steps {
                 sh '''
-                    echo "Evaluating DAST report for High/Critical vulnerabilities..."
+                  echo "Evaluating DAST report for High/Critical vulnerabilities..."
 
-                    if grep -Eiq "(High|Critical)" dast-report.html; then
-                        echo "High or Critical vulnerabilities found!"
-                        exit 1
+                  if grep -Ei "(High|Critical)" dast-report.html; then
+                    echo "High or Critical vulnerabilities detected"
+
+                    if [ "$SECURITY_WAIVER" = "true" ]; then
+                      echo "SECURITY WAIVER APPLIED — proceeding"
                     else
-                        echo "No High or Critical vulnerabilities found."
+                      echo "No waiver provided — failing pipeline"
+                      exit 1
                     fi
+                  else
+                    echo "No High or Critical vulnerabilities found"
+                  fi
                 '''
             }
         }
@@ -44,16 +58,7 @@ pipeline {
 
     post {
         always {
-            echo "Archiving DAST report..."
             archiveArtifacts artifacts: 'dast-report.html', fingerprint: true
-        }
-
-        failure {
-            echo "Pipeline failed due to security policy enforcement"
-        }
-
-        success {
-            echo "Pipeline passed security checks"
         }
     }
 }
