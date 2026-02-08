@@ -5,7 +5,7 @@ pipeline {
         booleanParam(
             name: 'SECURITY_WAIVER',
             defaultValue: false,
-            description: 'Approve pipeline to continue despite High/Critical DAST findings'
+            description: 'Approve DAST security waiver to allow pipeline to continue'
         )
     }
 
@@ -20,37 +20,37 @@ pipeline {
         stage('DAST Report Validation') {
             steps {
                 sh '''
-                  echo "Checking workspace..."
-                  pwd
-                  ls -l
+                    echo "Checking Jenkins workspace..."
+                    pwd
+                    ls -l
 
-                  if [ ! -f dast-report.html ]; then
-                    echo "DAST report not found!"
-                    exit 1
-                  fi
+                    if [ ! -f dast-report.html ]; then
+                        echo "DAST report not found!"
+                        exit 1
+                    fi
 
-                  echo "DAST report found"
+                    echo "DAST report found"
                 '''
             }
         }
 
-        stage('DAST Security Gate') {
+        stage('DAST Security Gate (CVSS Based)') {
             steps {
                 sh '''
-                  echo "Evaluating DAST report for High/Critical vulnerabilities..."
+                    echo "Evaluating DAST report using CVSS threshold..."
 
-                  if grep -Ei "(High|Critical)" dast-report.html; then
-                    echo "High or Critical vulnerabilities detected"
+                    if grep -E "CVSS\\s*[7-9]\\.[0-9]" dast-report.html; then
+                        echo "CVSS score >= 7.0 detected"
 
-                    if [ "$SECURITY_WAIVER" = "true" ]; then
-                      echo "SECURITY WAIVER APPLIED — proceeding"
+                        if [ "$SECURITY_WAIVER" = "true" ]; then
+                            echo "SECURITY WAIVER APPLIED — proceeding despite CVSS threshold"
+                        else
+                            echo "No waiver provided — failing pipeline due to CVSS policy"
+                            exit 1
+                        fi
                     else
-                      echo "No waiver provided — failing pipeline"
-                      exit 1
+                        echo "No CVSS >= 7.0 vulnerabilities found — proceeding"
                     fi
-                  else
-                    echo "No High or Critical vulnerabilities found"
-                  fi
                 '''
             }
         }
@@ -58,7 +58,11 @@ pipeline {
 
     post {
         always {
+            echo "Archiving DAST report..."
             archiveArtifacts artifacts: 'dast-report.html', fingerprint: true
+        }
+        failure {
+            echo "Pipeline failed due to security policy enforcement"
         }
     }
 }
