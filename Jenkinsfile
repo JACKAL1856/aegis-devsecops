@@ -43,26 +43,31 @@ pipeline {
                         echo "CVSS score >= 7.0 detected"
 
                         if [ "$SECURITY_WAIVER" = "true" ]; then
-                            echo "SECURITY WAIVER APPLIED — proceeding despite CVSS threshold"
+                            echo "SECURITY WAIVER APPLIED – proceeding despite CVSS threshold"
                         else
-                            echo "No waiver provided — failing pipeline due to CVSS policy"
+                            echo "No waiver provided – failing pipeline due to CVSS policy"
                             exit 1
                         fi
                     else
-                        echo "No CVSS >= 7.0 vulnerabilities found — proceeding"
+                        echo "No CVSS >= 7.0 vulnerabilities found – proceeding"
                     fi
                 '''
             }
         }
-    }
 
-    post {
-        always {
-            echo "Archiving DAST report..."
-            archiveArtifacts artifacts: 'dast-report.html', fingerprint: true
-        }
-        failure {
-            echo "Pipeline failed due to security policy enforcement"
+        stage('Secure Secrets Usage') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'API_TOKEN', variable: 'API_TOKEN')
+                ]) {
+                    sh '''
+                        echo "Running secured step"
+                        # Secret is masked automatically by Jenkins
+                        # Never echo secrets
+                        curl -H "Authorization: Bearer $API_TOKEN" https://example.com || true
+                    '''
+                }
+            }
         }
     }
 }
