@@ -136,15 +136,5 @@ This project goes beyond tool integration and focuses on **security-by-design**,
 
 ---
 
-## Repository Structure
-├── Jenkinsfile
-├── app/
-├── reports/
-│ └── dast/
-├── screenshots/
-├── security/
-│ ├── threat-modeling/
-│ └── reports/
-└── README.md
 
 
