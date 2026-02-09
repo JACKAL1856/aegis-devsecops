@@ -36,7 +36,11 @@ moderate because the Jenkins instance is locally hosted with limited access.
 Risk will be mitigated by implementing secure secret handling, log masking,
 and access control hardening in Jenkins.
 
-## 8. Next Steps
-Mitigation controls and secure pipeline configurations will be implemented
-in Phase 8.3.
+## Phase 8 Summary
+Phase 8 focused on security architecture and governance.
+Threat modeling and STRIDE analysis were performed for the CI/CD pipeline.
+Risks were prioritized using likelihood and impact.
+Mitigations were implemented including secure secret handling, CVSS-based
+security gates, and role-based access control.
+This phase ensures the pipeline is secure by design, not just secure by tools.
 
