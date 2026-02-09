@@ -1,64 +1,150 @@
 # Aegis – DevSecOps CI/CD Pipeline with Jenkins
 
-Aegis is a hands-on DevSecOps CI/CD pipeline implemented using Jenkins, focused on real-world security scanning, governance, and automated alerting.  
-This project demonstrates how security is embedded into CI/CD pipelines using industry-aligned practices.
+Aegis is an end-to-end **DevSecOps CI/CD pipeline** implemented using Jenkins, designed to demonstrate real-world security automation, governance, and risk-based decision-making across the software delivery lifecycle.
+
+This project goes beyond tool integration and focuses on **security-by-design**, **policy enforcement**, and **audit-ready documentation**.
 
 ---
 
-## Tooling & Stack
-- Jenkins (Declarative Pipeline)
-- OWASP ZAP (DAST)
-- Semgrep (SAST)
-- Dependency-Check (SCA)
-- Secret Scanning
-- Gmail SMTP (Email Alerts)
-- Docker
-- GitHub
-- Linux
+## Project Objectives
+
+- Integrate security testing into CI/CD pipelines
+- Enforce risk-based security gates
+- Prevent secret leakage and misconfigurations
+- Apply governance and least-privilege access control
+- Produce compliance and SOC-ready security artifacts
 
 ---
 
-## Security Phases Implemented
+## Architecture Overview
 
-### Phase 4 – DAST Execution & Report Archival
-- Automated OWASP ZAP DAST scanning
-- JSON / HTML report generation
-- Jenkins artifact archival for auditability
-
-### Phase 5 – DAST Security Gate Enforcement
-- Pipeline failure on detection of High/Critical vulnerabilities
-- Console-based evidence of enforcement
-- Fail-fast, security-first pipeline behavior
-
-### Phase 6 – Advanced DAST Governance
-- CVSS-based security gate (threshold ≥ 7.0)
-- Automatic pipeline failure on policy violation
-- Manual security waiver support via Jenkins parameters
-- Governance-ready, audit-friendly pipeline design
+- Jenkins CI/CD Pipeline
+- SAST, DAST, and Secrets Scanning
+- CVSS-based Security Gates
+- Jenkins Credentials Manager
+- Role-Based Access Control (RBAC)
+- GitHub as source-of-truth for security design and reporting
 
 ---
 
-## Phase 7 – Security Alerting & Email Notifications
+## Phase Breakdown
 
-### Objective
-Provide real-time security alerting by integrating Jenkins with email notifications for SAST, SCA, DAST, and Secrets scan results.
+### **Phase 1 – CI/CD Pipeline Foundation**
+**Objective:** Establish Jenkins-based CI/CD pipeline  
+- Jenkins installation and job setup  
+- Source code checkout from GitHub  
+- Baseline pipeline execution  
 
-### What Was Implemented
-- Gmail SMTP integration with Jenkins
-- Secure authentication using Google App Passwords
-- TLS-enabled email transport (`smtp.gmail.com:587`)
-- Jenkins Credentials Manager for secret storage
-- Automated alert triggering based on security scan results
+**Skills:** Jenkins fundamentals, pipeline structure
 
-### Proof
-- Test emails successfully delivered from Jenkins
-- Alert engine triggered on detected vulnerabilities
-- Evidence captured during live Jenkins execution and SMTP validation
-- Screenshots available in `/screenshots/phase7`
+---
 
-### Skills Demonstrated
-- Secure CI/CD configuration
-- SMTP troubleshooting & authentication
-- DevSecOps alerting design
-- Real-world Jenkins debugging and validation
+### **Phase 2 – SAST Integration**
+**Objective:** Detect code-level security issues early  
+- Static code analysis integration  
+- Fail pipeline on critical findings  
+
+**Skills:** Secure SDLC, SAST automation
+
+---
+
+### **Phase 3 – Secrets Detection**
+**Objective:** Prevent credential leakage  
+- Secrets scanning in source code  
+- Immediate pipeline failure on detection  
+
+**Skills:** Secrets management, shift-left security
+
+---
+
+### **Phase 4 – DAST Integration**
+**Objective:** Identify runtime vulnerabilities  
+- Dynamic application security testing  
+- Vulnerability report generation  
+
+**Skills:** Web security testing, DAST orchestration
+
+---
+
+### **Phase 5 – CVSS-Based Security Gate**
+**Objective:** Enforce risk-based pipeline control  
+- CVSS threshold evaluation (≥ 7.0)  
+- Pipeline failure on high-risk findings  
+
+**Skills:** Risk scoring, policy enforcement
+
+---
+
+### **Phase 6 – DAST Governance & Reporting**
+**Objective:** Add structured validation and evidence  
+- DAST report validation  
+- Governance logic in pipeline  
+- Audit-friendly outputs  
+
+**Skills:** Security governance, reporting discipline
+
+---
+
+### **Phase 7 – Security Alerting & Notifications**
+**Objective:** Enable real-time security awareness  
+- Gmail SMTP integration with Jenkins  
+- Secure authentication via app passwords  
+- Automated alerts for security findings  
+
+**Skills:** Alerting design, secure SMTP configuration
+
+---
+
+### **Phase 8 – Threat Modeling & Security Architecture**
+**Objective:** Design security, not just scan for issues  
+
+- STRIDE-based threat modeling  
+- Risk analysis using likelihood × impact  
+- Secure secret handling using Jenkins Credentials Manager  
+- CVSS security waiver governance  
+- Role-Based Access Control (RBAC) with least privilege  
+
+ Documentation:  
+`security/threat-modeling/phase-8-threat-model.md`
+
+**Skills:** Security architecture, threat modeling, governance
+
+---
+
+### **Phase 9 – Compliance, Reporting & SOC Readiness**
+**Objective:** Communicate security posture clearly  
+
+- Executive-level security summary  
+- Compliance alignment (OWASP Top 10)  
+- SOC-style reporting and traceability  
+- Audit-ready documentation  
+
+ Documentation:  
+`security/reports/phase-9-security-report.md`
+
+**Skills:** Compliance thinking, SOC readiness, security reporting
+
+---
+
+## Key Security Features
+
+- CVSS-based security gates  
+- Secure secrets handling (no hardcoded credentials)  
+- RBAC-enforced governance  
+- Risk-based security decisions  
+- Full traceability via Git history  
+
+---
+
+## Repository Structure
+├── Jenkinsfile
+├── app/
+├── reports/
+│ └── dast/
+├── screenshots/
+├── security/
+│ ├── threat-modeling/
+│ └── reports/
+└── README.md
+
 
